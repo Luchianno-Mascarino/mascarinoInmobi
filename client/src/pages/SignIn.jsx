@@ -1,27 +1,31 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'; // Añadir useSelector para obtener estado
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Acceder al estado global de Redux
+  const { loading, error } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value,
     });
-    setError(null);
-  }
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // to prevent refresh
+    e.preventDefault(); // prevenir la recarga de la página
+    dispatch(signInStart()); // Despachar la acción para iniciar el proceso de login
+
     try {
-      setLoading(true);
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
@@ -29,18 +33,19 @@ export default function SignIn() {
         },
         body: JSON.stringify(formData),
       });
+
       const data = await res.json();
+
       if (data.success === false) {
-        setError(data.message);
+        dispatch(signInFailure(data.message)); // Despachar acción de fallo
       } else {
+        dispatch(signInSuccess(data.user)); // Despachar acción de éxito
         navigate('/'); // Redirigir solo si el inicio de sesión es exitoso
       }
     } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+      dispatch(signInFailure(error.message)); // Despachar acción de fallo
     }
-  }
+  };
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
