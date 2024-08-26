@@ -1,0 +1,5 @@
+//Change name with your mongo db server
+
+MONGO = "mongodb+srv://name:name@cluster0.6iutjfo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
+JWT_SECRET = 'here you use the JWT secret'
