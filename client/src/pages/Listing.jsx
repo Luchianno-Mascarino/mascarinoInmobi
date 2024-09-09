@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {Swiper, SwiperSlide} from 'swiper/react';
 import SwiperCore from 'swiper';
+import {useSelector} from 'react-redux';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
 import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'react-icons/fa';
+import Contact from '../components/Contact';
 
 export default function Listing() {
     SwiperCore.use([Navigation]);
@@ -12,8 +14,10 @@ export default function Listing() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [copied, setCopied] = useState(false);
-
+    const [contact, setContact] = useState(false);
     const params = useParams();
+    const {currentUser} = useSelector((state) => state.user);
+
 
     useEffect(()=> {
         const fetchListing = async () => {
@@ -37,7 +41,6 @@ export default function Listing() {
         }
         fetchListing();
     }, [params.listingId]);
-    console.log(loading)
 
   return (
     //si quiero cambiar por un spinner el loading lo cambio en donde esta <p>
@@ -97,7 +100,7 @@ export default function Listing() {
                     )}
                 </div>
                 <p className='text-slate-800' >
-                    <span className='font-semibold text-black' >Decription - </span>
+                    <span className='font-semibold text-black' >Description - </span>
                     {listing.description}
                 </p>
                 <ul className='text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
@@ -126,6 +129,10 @@ export default function Listing() {
                         : `Unfurnished`} 
                     </li>
                 </ul>
+                {currentUser && listing.userRef !== currentUser._id && !contact && (
+                    <button onClick={() => setContact(true)} className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3' >Contact Landlord</button>
+                ) }
+                {contact && <Contact listing={listing} />}
             </div>
         </div>
         
