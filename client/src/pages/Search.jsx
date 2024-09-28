@@ -17,9 +17,8 @@ export default function Search() {
     });
 
     const [loading, setLoading] = useState(false);
-    const [listings, setListing] = useState([]);
-
-    console.log(listings);
+    const [listings, setListings] = useState([]);
+    const [showMore, setShowMore] = useState(false);
     
 
    useEffect(() => {
@@ -54,10 +53,16 @@ export default function Search() {
 
     const fetchListings = async () => {
         setLoading(true);
+        setShowMore(false);
         const searchQuery = urlParams.toString();
         const res = await fetch(`/api/listing/get?${searchQuery}`);
         const data = await res.json();
-        setListing(data);
+        if(data.length > 8){
+            setShowMore(true);
+        } else {
+            setShowMore(false);
+        }
+        setListings(data);
         setLoading(false);
     };
 
@@ -106,6 +111,20 @@ export default function Search() {
 
         const searchQuery = urlParams.toString();
         navigate(`/search?${searchQuery}`); 
+    }
+
+    const onShowMoreClick = async () => {
+        const numberOfListings = listings.length;
+        const startIndex = numberOfListings;
+        const urlParams = new URLSearchParams(location.search);
+        urlParams.set('startIndex', startIndex);
+        const searchQuery = urlParams.toString();
+        const res = await fetch(`/api/listing/get?${searchQuery}`);
+        const data = await res.json();
+        if (data.length < 9){
+            setShowMore(false);
+        }
+        setListings([...listings,...data]);
     }
 
   return (
@@ -200,6 +219,18 @@ export default function Search() {
             {
                 !loading && listings && listings.map((listing) => 
                     <ListingItem key={listing._id} listing={listing} />)
+            }
+
+            {
+                showMore && (
+                    <button onClick={() =>{
+                        onShowMoreClick();
+                    }}
+                    className='text-green-700 hover:underline p-7 text-center w-full'
+                    >
+                    Mostrar mas 
+                    </button>
+                )
             }
         </div>
       </div>
