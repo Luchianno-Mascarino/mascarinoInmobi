@@ -46,8 +46,8 @@ export default function Listing() {
     //si quiero cambiar por un spinner el loading lo cambio en donde esta <p>
     <main>
       {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
-      {error && <p className='text-center my-7 text-2xl' >Something went wrong</p>}
-      {listing && !loading && !error && 
+      {error && (<p className='text-center my-7 text-2xl' >Something went wrong</p>)}
+      {listing && !loading && !error && (
         <div>
             <Swiper navigation>
                 {listing.imageUrls.map((url) => (
@@ -95,7 +95,7 @@ export default function Listing() {
                     </p>
                     {listing.offer && (
                         <p className='bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md' >
-                            ${+listing.regularPrice - +listing.discountPrice}
+                            ${+listing.regularPrice - +listing.discountPrice} descuento
                         </p>
                     )}
                 </div>
@@ -135,7 +135,7 @@ export default function Listing() {
                 {contact && <Contact listing={listing} />}
             </div>
         </div>
-        
+      )
       }
     </main>
   )
